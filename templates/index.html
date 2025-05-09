@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini Chatbot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen">
+  <div class="w-full max-w-xl bg-white rounded-2xl shadow-lg p-6">
+    <h2 class="text-2xl font-bold text-center mb-4">💬 Let's talk</h2>
+
+    <div id="chat-box" class="h-96 overflow-y-auto border p-4 rounded mb-4 bg-gray-50">
+      {% for chat in chat_history %}
+        <div class="mb-4">
+          <div><strong class="text-blue-600">You:</strong> {{ chat.user }}</div>
+          <div><strong class="text-green-600">Bot:</strong> {{ chat.bot }}</div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Input Field & Send Button -->
+    <form method="post" class="flex gap-2">
+      <input id="user-input" type="text" name="user_input" placeholder="Type or speak your message..." required
+             class="flex-grow border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-200">
+      <button type="submit"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Send</button>
+    </form>
+
+    <!-- Buttons for Voice & Read Aloud -->
+    <div class="flex justify-between mt-4">
+      <button id="voice-button" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        🎤 Speak
+      </button>
+      <button id="read-aloud-button" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+        🔊 Read Aloud
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Voice recognition (Speech-to-Text)
+    const voiceButton = document.getElementById('voice-button');
+    const userInput = document.getElementById('user-input');
+    
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+
+    voiceButton.addEventListener('click', () => {
+      recognition.start();
+    });
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      userInput.value = transcript;  // Populate text input with recognized speech
+    };
+
+    recognition.onerror = (event) => {
+      console.log('Speech recognition error', event.error);
+    };
+
+    // Read aloud (Text-to-Speech)
+    const readAloudButton = document.getElementById('read-aloud-button');
+
+    readAloudButton.addEventListener('click', () => {
+      const botResponse = document.querySelectorAll('.text-green-600')[document.querySelectorAll('.text-green-600').length - 1].innerText;
+      const speech = new SpeechSynthesisUtterance(botResponse);
+      speech.lang = 'en-US';
+      window.speechSynthesis.speak(speech);
+    });
+  </script>
+</body>
+</html>
