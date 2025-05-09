@@ -62,10 +62,20 @@
     const readAloudButton = document.getElementById('read-aloud-button');
 
     readAloudButton.addEventListener('click', () => {
-      const botResponse = document.querySelectorAll('.text-green-600')[document.querySelectorAll('.text-green-600').length - 1].innerText;
-      const speech = new SpeechSynthesisUtterance(botResponse);
-      speech.lang = 'en-US';
-      window.speechSynthesis.speak(speech);
+      const chatBoxes = document.querySelectorAll('#chat-box > div');
+      if (chatBoxes.length > 0) {
+        const lastBox = chatBoxes[chatBoxes.length - 1];
+        const botLine = Array.from(lastBox.querySelectorAll('div')).find(div =>
+          div.textContent.trim().startsWith('Bot:')
+        );
+        const responseText = botLine?.textContent?.replace('Bot:', '').trim();
+
+        if (responseText) {
+          const speech = new SpeechSynthesisUtterance(responseText);
+          speech.lang = 'en-US';
+          window.speechSynthesis.speak(speech);
+        }
+      }
     });
   </script>
 </body>
