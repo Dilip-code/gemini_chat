@@ -41,26 +41,26 @@
     // Voice recognition (Speech-to-Text)
     const voiceButton = document.getElementById('voice-button');
     const userInput = document.getElementById('user-input');
-    
+  
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
-
+  
     voiceButton.addEventListener('click', () => {
       recognition.start();
     });
-
+  
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       userInput.value = transcript;  // Populate text input with recognized speech
     };
-
+  
     recognition.onerror = (event) => {
       console.log('Speech recognition error', event.error);
     };
-
+  
     // Read aloud (Text-to-Speech)
     const readAloudButton = document.getElementById('read-aloud-button');
-
+  
     readAloudButton.addEventListener('click', () => {
       const chatBoxes = document.querySelectorAll('#chat-box > div');
       if (chatBoxes.length > 0) {
@@ -68,9 +68,12 @@
         const botLine = Array.from(lastBox.querySelectorAll('div')).find(div =>
           div.textContent.trim().startsWith('Bot:')
         );
-        const responseText = botLine?.textContent?.replace('Bot:', '').trim();
-
+  
+        let responseText = botLine?.textContent?.replace('Bot:', '').trim();
         if (responseText) {
+          // Remove Markdown-style bold (**text**)
+          responseText = responseText.replace(/\*\*/g, '');
+  
           const speech = new SpeechSynthesisUtterance(responseText);
           speech.lang = 'en-US';
           window.speechSynthesis.speak(speech);
@@ -78,5 +81,6 @@
       }
     });
   </script>
+  
 </body>
 </html>
